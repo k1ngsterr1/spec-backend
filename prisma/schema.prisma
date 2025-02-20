@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Set your database URL in .env file
+}
+
+model Admin {
+    username     String   @unique
+    passwordHash String   @map("password_hash")
+}
+
+
+model User {
+  id           Int      @id @default(autoincrement())
+  fullname     String?
+  phone        String   @unique
+  createdAt    DateTime @default(now()) @map("created_at")
+  appToken     String?  @map("app_token")
+  userAgent    String?  @map("user_agent")
+  cityId       Int?
+  city         City?    @relation(fields: [cityId], references: [id])
+  role         String
+  priority     Int
+
+  // Relations
+  tasksCreated   Task[]           @relation("Creator") // ✅ No `fields` & `references` here
+  tasksPerformed Task[]           @relation("Performer") // ✅ No `fields` & `references` here
+  taskHistory    TaskHistory[]
+  balanceHistory BalanceHistory[]
+  userCategories UserCategory[]
+
+  @@map("users")
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  cityId      Int
+  city        City      @relation(fields: [cityId], references: [id])
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  executeAt   DateTime? @map("execute_at")
+  description String?
+  priceMin    Float     @map("price_min")
+  priceMax    Float     @map("price_max")
+  priceFact   Float?    @map("price_fact")
+  phone       String
+  address     String
+  statusId    Int
+  status      Status    @relation(fields: [statusId], references: [id])
+
+  // Relations (Fixing issue)
+  creatorUserId Int
+  creator       User @relation("Creator", fields: [creatorUserId], references: [id]) // ✅ `fields` & `references` only here
+
+  performerUserId Int?
+  performer       User? @relation("Performer", fields: [performerUserId], references: [id]) // ✅ `fields` & `references` only here
+
+  createdAt      DateTime         @default(now()) @map("created_at")
+  commission     Float
+  cityArea       String?          @map("city_area")
+  emergencyCall  Boolean          @map("emergency_call")
+  taskHistory    TaskHistory[]
+  BalanceHistory BalanceHistory[]
+
+  @@map("tasks")
+}
+
+model City {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+  Task  Task[]
+
+  @@map("cities")
+}
+
+model Category {
+  id       Int        @id @default(autoincrement())
+  name     String
+  parentId Int?
+  parent   Category?  @relation("CategoryParent", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryParent")
+
+  userCategories UserCategory[]
+  tasks          Task[]
+
+  @@map("categories")
+}
+
+model Status {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  tasks       Task[]
+  taskHistory TaskHistory[]
+
+  @@map("statuses")
+}
+
+model TaskHistory {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  task      Task     @relation(fields: [taskId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  comment   String?
+  statusId  Int
+  status    Status   @relation(fields: [statusId], references: [id])
+
+  @@map("task_history")
+}
+
+model BalanceHistory {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  task      Task     @relation(fields: [taskId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  reasonId  Int
+  val       Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("balance_history")
+}
+
+model UserCategory {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map("user_category")
+}
