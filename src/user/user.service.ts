@@ -1,12 +1,9 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { SendSMSDto } from './dto/send-sms.dto';
 import { ReceiveSMSDto } from './dto/receive-sms.dto';
-import { LoginDto } from './dto/login.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
-import { RegisterDto } from './dto/register.dto';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -16,14 +13,30 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  sendSms(sendSMSDto: SendSMSDto) {
+  async sendSms(data: SendSMSDto) {
     const smsCode = this.configService.get<string>('SMS_CODE');
 
     if (smsCode) {
-      return {
-        success: sendSMSDto.code.toString() === smsCode,
-        message: 'Using test SMS code',
-      };
+      let user = await this.prisma.user.findUnique({
+        where: { phone: data.phone },
+      });
+
+      if (user) {
+        throw new HttpException('User already exists', 400);
+      }
+
+      user = await this.prisma.user.create({
+        data: {
+          phone: data.phone,
+          priority: 0,
+          role: 'performer',
+        },
+      });
+
+      const payload = { phone: user.phone, id: user.id, role: user.role };
+      const token = this.jwtService.sign(payload);
+
+      return { user, token };
     } else {
       return { success: true, message: 'Real SMS verification logic' };
     }
