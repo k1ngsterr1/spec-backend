@@ -47,7 +47,7 @@ export class UserService {
 
     if (smsCode) {
       return {
-        success: receiveSMSDto.phone,
+        phone: receiveSMSDto.phone,
         message: `Hardcoded SMS code was sent to the ${receiveSMSDto.phone}`,
       };
     } else {
