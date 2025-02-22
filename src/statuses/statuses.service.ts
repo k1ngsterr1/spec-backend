@@ -1,26 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStatusDto } from './dto/create-status.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
+import { PrismaService } from 'src/shared/prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class StatusesService {
-  create(createStatusDto: CreateStatusDto) {
-    return 'This action adds a new status';
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async create(data: CreateStatusDto) {
+    const status = await this.prisma.status.create({
+      data: {
+        name: data.name,
+      },
+    });
+
+    return { success: 'Статус успешно создан!', status: status };
   }
 
-  findAll() {
-    return `This action returns all statuses`;
+  async findAll() {
+    return await this.prisma.status.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} status`;
+  async findOne(id: number) {
+    const status = await this.prisma.status.findUnique({
+      where: { id },
+    });
+
+    if (!status) {
+      throw new NotFoundException(`Статус с ID ${id} не найден`);
+    }
+
+    return status;
   }
 
-  update(id: number, updateStatusDto: UpdateStatusDto) {
-    return `This action updates a #${id} status`;
+  async update(id: number, updateStatusDto: UpdateStatusDto) {
+    const status = await this.prisma.status.findUnique({ where: { id } });
+
+    if (!status) {
+      throw new NotFoundException(`Статус с ID ${id} не найден`);
+    }
+
+    return await this.prisma.status.update({
+      where: { id },
+      data: {
+        name: updateStatusDto.name,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} status`;
+  async remove(id: number) {
+    const status = await this.prisma.status.findUnique({ where: { id } });
+
+    if (!status) {
+      throw new NotFoundException(`Статус с ID ${id} не найден`);
+    }
+
+    await this.prisma.status.delete({ where: { id } });
+
+    return { success: `Статус с ID ${id} удален` };
   }
 }

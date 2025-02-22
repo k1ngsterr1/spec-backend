@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // Set your database URL in .env file
+  url      = env("DATABASE_URL")
 }
 
 model Admin {
@@ -12,7 +12,6 @@ model Admin {
     username     String   @unique
     passwordHash String   @map("password_hash")
 }
-
 
 model User {
   id           Int      @id @default(autoincrement())

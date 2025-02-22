@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -13,8 +22,24 @@ export class TasksController {
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(
+    @Query('cityId') cityId?: number,
+    @Query('categoryId') categoryId?: number,
+    @Query('statusId') statusId?: number,
+    @Query('performerUserId') performerUserId?: number,
+    @Query('executeAtFrom') executeAtFrom?: string,
+    @Query('executeAtTo') executeAtTo?: string,
+    @Query('emergencyCall') emergencyCall?: boolean,
+  ) {
+    return this.tasksService.findAll({
+      cityId: cityId ? Number(cityId) : undefined,
+      categoryId: categoryId ? Number(categoryId) : undefined,
+      statusId: statusId ? Number(statusId) : undefined,
+      performerUserId: performerUserId ? Number(performerUserId) : undefined,
+      executeAtFrom: executeAtFrom || undefined,
+      executeAtTo: executeAtTo || undefined,
+      emergencyCall: emergencyCall === true,
+    });
   }
 
   @Get(':id')

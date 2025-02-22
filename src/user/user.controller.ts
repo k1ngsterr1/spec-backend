@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ReceiveSMSDto } from './dto/receive-sms.dto';
 import { SendSMSDto } from './dto/send-sms.dto';
@@ -18,7 +18,9 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query('fullName') fullName?: string) {
+    return this.userService.findAll({
+      fullName: fullName,
+    });
   }
 }

@@ -42,7 +42,7 @@ export class UserService {
     }
   }
 
-  receiveSms(receiveSMSDto: ReceiveSMSDto) {
+  async receiveSms(receiveSMSDto: ReceiveSMSDto) {
     const smsCode = this.configService.get<string>('SMS_CODE');
 
     if (smsCode) {
@@ -55,12 +55,18 @@ export class UserService {
     }
   }
 
-  create() {
-    return 'This action adds a new user';
+  async findAll(query: { fullName?: string }) {
+    const users = await this.prisma.user.findMany({
+      where: {
+        fullname: query.fullName,
+      },
+    });
+
+    return users;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  create() {
+    return 'This action adds a new user';
   }
 
   findOne(id: number) {
