@@ -12,7 +12,7 @@ export class StatusesService {
   ) {}
 
   async create(data: CreateStatusDto) {
-    const status = await this.prisma.status.create({
+    const status = await this.prisma.statuses.create({
       data: {
         name: data.name,
       },
@@ -22,11 +22,11 @@ export class StatusesService {
   }
 
   async findAll() {
-    return await this.prisma.status.findMany();
+    return await this.prisma.statuses.findMany();
   }
 
   async findOne(id: number) {
-    const status = await this.prisma.status.findUnique({
+    const status = await this.prisma.statuses.findUnique({
       where: { id },
     });
 
@@ -38,13 +38,13 @@ export class StatusesService {
   }
 
   async update(id: number, updateStatusDto: UpdateStatusDto) {
-    const status = await this.prisma.status.findUnique({ where: { id } });
+    const status = await this.prisma.statuses.findUnique({ where: { id } });
 
     if (!status) {
       throw new NotFoundException(`Статус с ID ${id} не найден`);
     }
 
-    return await this.prisma.status.update({
+    return await this.prisma.statuses.update({
       where: { id },
       data: {
         name: updateStatusDto.name,
@@ -53,13 +53,13 @@ export class StatusesService {
   }
 
   async remove(id: number) {
-    const status = await this.prisma.status.findUnique({ where: { id } });
+    const status = await this.prisma.statuses.findUnique({ where: { id } });
 
     if (!status) {
       throw new NotFoundException(`Статус с ID ${id} не найден`);
     }
 
-    await this.prisma.status.delete({ where: { id } });
+    await this.prisma.statuses.delete({ where: { id } });
 
     return { success: `Статус с ID ${id} удален` };
   }

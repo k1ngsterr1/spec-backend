@@ -23,22 +23,24 @@ export class TasksController {
 
   @Get()
   findAll(
-    @Query('cityId') cityId?: number,
-    @Query('categoryId') categoryId?: number,
-    @Query('statusId') statusId?: number,
-    @Query('performerUserId') performerUserId?: number,
+    @Query('city_id') city_id?: number,
+    @Query('category_id') category_id?: number,
+    @Query('status_id') status_id?: number,
+    @Query('performer_user_id') performer_user_id?: number,
     @Query('executeAtFrom') executeAtFrom?: string,
     @Query('executeAtTo') executeAtTo?: string,
-    @Query('emergencyCall') emergencyCall?: boolean,
+    @Query('emergency_call') emergency_call?: boolean,
   ) {
     return this.tasksService.findAll({
-      cityId: cityId ? Number(cityId) : undefined,
-      categoryId: categoryId ? Number(categoryId) : undefined,
-      statusId: statusId ? Number(statusId) : undefined,
-      performerUserId: performerUserId ? Number(performerUserId) : undefined,
+      city_id: city_id ? Number(city_id) : undefined,
+      category_id: category_id ? Number(category_id) : undefined,
+      status_id: status_id ? Number(status_id) : undefined,
+      performer_user_id: performer_user_id
+        ? Number(performer_user_id)
+        : undefined,
       executeAtFrom: executeAtFrom || undefined,
       executeAtTo: executeAtTo || undefined,
-      emergencyCall: emergencyCall === true,
+      emergency_call: emergency_call === true,
     });
   }
 

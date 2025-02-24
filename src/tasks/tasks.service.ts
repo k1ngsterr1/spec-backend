@@ -13,22 +13,20 @@ export class TasksService {
 
   /** Создание новой задачи */
   async create(data: CreateTaskDto) {
-    const task = await this.prisma.task.create({
+    const task = await this.prisma.tasks.create({
       data: {
-        cityId: data.cityId,
-        cityArea: data.cityArea,
-        categoryId: data.categoryId,
-        executeAt: data.executeAt ? new Date(data.executeAt) : null,
+        category_id: data.category_id,
+        execute_at: data.execute_at ? new Date(data.execute_at) : null,
         description: data.description,
-        priceMin: data.priceMin,
-        priceMax: data.priceMax,
+        price_min: data.price_min,
+        price_max: data.price_max,
         commission: data.commission,
         phone: data.phone,
         address: data.address,
-        statusId: data.statusId,
-        creatorUserId: data.creatorUserId,
-        performerUserId: data.performerUserId ?? null,
-        emergencyCall: data.emergencyCall ?? false,
+        status_id: data.status_id,
+        creator_user_id: data.creator_user_id,
+        performer_user_id: data.performer_user_id ?? null,
+        emergency_call: data.emergency_call ?? false,
       },
     });
 
@@ -37,22 +35,22 @@ export class TasksService {
 
   /** Получение всех задач */
   async findAll(query: {
-    cityId?: number;
-    categoryId?: number;
-    statusId?: number;
-    performerUserId?: number;
+    city_id?: number;
+    category_id?: number;
+    status_id?: number;
+    performer_user_id?: number;
     executeAtFrom?: string;
     executeAtTo?: string;
-    emergencyCall?: boolean;
+    emergency_call?: boolean;
   }) {
-    const tasks = await this.prisma.task.findMany({
+    const tasks = await this.prisma.tasks.findMany({
       where: {
-        cityId: query.cityId,
-        categoryId: query.categoryId,
-        statusId: query.statusId,
-        performerUserId: query.performerUserId,
-        emergencyCall: query.emergencyCall,
-        executeAt:
+        city_id: query.city_id,
+        category_id: query.category_id,
+        status_id: query.status_id,
+        performer_user_id: query.performer_user_id,
+        emergency_call: query.emergency_call,
+        execute_at:
           query.executeAtFrom || query.executeAtTo
             ? {
                 gte: query.executeAtFrom
@@ -64,11 +62,6 @@ export class TasksService {
               }
             : undefined,
       },
-      include: {
-        city: true,
-        category: true,
-        status: true,
-      },
     });
 
     return tasks;
@@ -76,13 +69,8 @@ export class TasksService {
 
   /** Получение всех задач */
   async findOne(id: number) {
-    const task = await this.prisma.task.findUnique({
+    const task = await this.prisma.tasks.findUnique({
       where: { id },
-      include: {
-        city: true,
-        category: true,
-        status: true,
-      },
     });
 
     if (!task) {
@@ -95,28 +83,28 @@ export class TasksService {
   /** Обновление задачи */
   async update(id: number, updateTaskDto: UpdateTaskDto) {
     // Проверяем, существует ли задача
-    const existingTask = await this.prisma.task.findUnique({ where: { id } });
+    const existingTask = await this.prisma.tasks.findUnique({ where: { id } });
 
     if (!existingTask) {
       throw new NotFoundException(`Задание с ID ${id} не найдено`);
     }
 
-    const updatedTask = await this.prisma.task.update({
+    const updatedTask = await this.prisma.tasks.update({
       where: { id },
       data: {
-        cityArea: updateTaskDto.cityArea,
-        executeAt: updateTaskDto.executeAt
-          ? new Date(updateTaskDto.executeAt)
+        city_area: updateTaskDto.city_area,
+        execute_at: updateTaskDto.execute_at
+          ? new Date(updateTaskDto.execute_at)
           : undefined,
         description: updateTaskDto.description,
-        priceMin: updateTaskDto.priceMin,
-        priceMax: updateTaskDto.priceMax,
+        price_min: updateTaskDto.price_min,
+        price_max: updateTaskDto.price_max,
         commission: updateTaskDto.commission,
         phone: updateTaskDto.phone,
         address: updateTaskDto.address,
-        statusId: updateTaskDto.statusId,
-        performerUserId: updateTaskDto.performerUserId ?? null,
-        emergencyCall: updateTaskDto.emergencyCall ?? false,
+        status_id: updateTaskDto.status_id,
+        performer_user_id: updateTaskDto.performer_user_id ?? null,
+        emergency_call: updateTaskDto.emergency_call ?? false,
       },
     });
 
@@ -126,13 +114,13 @@ export class TasksService {
   /** Удаление задачи */
   async remove(id: number) {
     // Проверяем, существует ли задача
-    const existingTask = await this.prisma.task.findUnique({ where: { id } });
+    const existingTask = await this.prisma.tasks.findUnique({ where: { id } });
 
     if (!existingTask) {
       throw new NotFoundException(`Задание с ID ${id} не найдено`);
     }
 
-    await this.prisma.task.delete({ where: { id } });
+    await this.prisma.tasks.delete({ where: { id } });
 
     return { success: `Задание #${id} удалено` };
   }

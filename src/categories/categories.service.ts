@@ -12,7 +12,7 @@ export class CategoriesService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    const category = await this.prisma.category.create({
+    const category = await this.prisma.categories.create({
       data: {
         name: createCategoryDto.name,
       },
@@ -22,7 +22,7 @@ export class CategoriesService {
   }
 
   async findAll() {
-    const categories = await this.prisma.category.findMany();
+    const categories = await this.prisma.categories.findMany();
 
     return categories;
   }

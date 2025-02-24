@@ -18,7 +18,7 @@ export class UserAuthGuard extends AuthGuard {
         throw new UnauthorizedException('Invalid token payload');
       }
 
-      const user = await this.prisma.user.findUnique({
+      const user = await this.prisma.users.findUnique({
         where: { id: payload.id },
       });
 

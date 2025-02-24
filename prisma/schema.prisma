@@ -7,132 +7,104 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Admin {
-    id           Int      @id @default(autoincrement())
-    username     String   @unique
-    passwordHash String   @map("password_hash")
+model balance_history {
+  id         Int       @id @default(autoincrement())
+  task_id    Int?
+  user_id    Int?
+  reason_id  Int
+  val        Float
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  tasks      tasks?    @relation(fields: [task_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
-model User {
-  id           Int      @id @default(autoincrement())
-  fullname     String?
-  phone        String   @unique
-  createdAt    DateTime @default(now()) @map("created_at")
-  appToken     String?  @map("app_token")
-  userAgent    String?  @map("user_agent")
-  cityId       Int?
-  city         City?    @relation(fields: [cityId], references: [id])
-  role         String
-  priority     Int
-
-  // Relations
-  tasksCreated   Task[]           @relation("Creator") // ✅ No `fields` & `references` here
-  tasksPerformed Task[]           @relation("Performer") // ✅ No `fields` & `references` here
-  taskHistory    TaskHistory[]
-  balanceHistory BalanceHistory[]
-  userCategories UserCategory[]
-
-  @@map("users")
+model categories {
+  id               Int             @id @default(autoincrement())
+  name             String
+  parent_id        Int?
+  categories       categories?     @relation("categoriesTocategories", fields: [parent_id], references: [id], onUpdate: NoAction)
+  other_categories categories[]    @relation("categoriesTocategories")
+  tasks            tasks[]
+  user_category    user_category[]
 }
 
-model Task {
-  id          Int       @id @default(autoincrement())
-  cityId      Int
-  city        City      @relation(fields: [cityId], references: [id])
-  categoryId  Int
-  category    Category  @relation(fields: [categoryId], references: [id])
-  executeAt   DateTime? @map("execute_at")
-  description String?
-  priceMin    Float     @map("price_min")
-  priceMax    Float     @map("price_max")
-  priceFact   Float?    @map("price_fact")
-  phone       String
-  address     String
-  statusId    Int
-  status      Status    @relation(fields: [statusId], references: [id])
-
-  // Relations (Fixing issue)
-  creatorUserId Int
-  creator       User @relation("Creator", fields: [creatorUserId], references: [id]) // ✅ `fields` & `references` only here
-
-  performerUserId Int?
-  performer       User? @relation("Performer", fields: [performerUserId], references: [id]) // ✅ `fields` & `references` only here
-
-  createdAt      DateTime         @default(now()) @map("created_at")
-  commission     Float
-  cityArea       String?          @map("city_area")
-  emergencyCall  Boolean          @map("emergency_call")
-  taskHistory    TaskHistory[]
-  BalanceHistory BalanceHistory[]
-
-  @@map("tasks")
+model cities {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  tasks tasks[]
+  users users[]
 }
 
-model City {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  users User[]
-  Task  Task[]
-
-  @@map("cities")
+model statuses {
+  id           Int            @id @default(autoincrement())
+  name         String
+  task_history task_history[]
+  tasks        tasks[]
 }
 
-model Category {
-  id       Int        @id @default(autoincrement())
-  name     String
-  parentId Int?
-  parent   Category?  @relation("CategoryParent", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryParent")
-
-  userCategories UserCategory[]
-  tasks          Task[]
-
-  @@map("categories")
+model task_history {
+  id         Int       @id @default(autoincrement())
+  task_id    Int?
+  user_id    Int?
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  comment    String?
+  status_id  Int?
+  statuses   statuses? @relation(fields: [status_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tasks      tasks?    @relation(fields: [task_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users      users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
-model Status {
-  id   Int    @id @default(autoincrement())
-  name String
-
-  tasks       Task[]
-  taskHistory TaskHistory[]
-
-  @@map("statuses")
+model tasks {
+  id                                   Int               @id @default(autoincrement())
+  city_id                              Int?
+  category_id                          Int?
+  execute_at                           DateTime?         @db.Timestamp(6)
+  description                          String?
+  price_min                            Float
+  price_max                            Float
+  price_fact                           Float?
+  phone                                String
+  address                              String
+  status_id                            Int?
+  creator_user_id                      Int?
+  performer_user_id                    Int?
+  created_at                           DateTime?         @default(now()) @db.Timestamp(6)
+  commission                           Float
+  city_area                            String?
+  emergency_call                       Boolean?          @default(false)
+  balance_history                      balance_history[]
+  task_history                         task_history[]
+  categories                           categories?       @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  cities                               cities?           @relation(fields: [city_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_tasks_creator_user_idTousers   users?            @relation("tasks_creator_user_idTousers", fields: [creator_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_tasks_performer_user_idTousers users?            @relation("tasks_performer_user_idTousers", fields: [performer_user_id], references: [id], onUpdate: NoAction)
+  statuses                             statuses?         @relation(fields: [status_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
-model TaskHistory {
-  id        Int      @id @default(autoincrement())
-  taskId    Int
-  task      Task     @relation(fields: [taskId], references: [id])
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now()) @map("created_at")
-  comment   String?
-  statusId  Int
-  status    Status   @relation(fields: [statusId], references: [id])
-
-  @@map("task_history")
+model user_category {
+  id          Int         @id @default(autoincrement())
+  user_id     Int?
+  category_id Int?
+  categories  categories? @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users       users?      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
-model BalanceHistory {
-  id        Int      @id @default(autoincrement())
-  taskId    Int
-  task      Task     @relation(fields: [taskId], references: [id])
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  reasonId  Int
-  val       Float
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("balance_history")
-}
-
-model UserCategory {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  @@map("user_category")
+model users {
+  id                                   Int               @id @default(autoincrement())
+  username                             String?           @unique
+  fullname                             String?
+  phone                                String            @unique
+  password_hash                        String
+  created_at                           DateTime?         @default(now()) @db.Timestamp(6)
+  app_token                            String?
+  user_agent                           String?
+  city_id                              Int?
+  role                                 String
+  priority                             Int
+  balance_history                      balance_history[]
+  task_history                         task_history[]
+  tasks_tasks_creator_user_idTousers   tasks[]           @relation("tasks_creator_user_idTousers")
+  tasks_tasks_performer_user_idTousers tasks[]           @relation("tasks_performer_user_idTousers")
+  user_category                        user_category[]
+  cities                               cities?           @relation(fields: [city_id], references: [id], onUpdate: NoAction)
 }

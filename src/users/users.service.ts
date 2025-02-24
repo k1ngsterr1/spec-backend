@@ -16,7 +16,7 @@ export class UsersService {
   }
 
   async findAll(query: { role?: string; fullName?: string }) {
-    const users = await this.prisma.user.findMany({
+    const users = await this.prisma.users.findMany({
       where: {
         role: query.role,
         fullname: query.fullName,

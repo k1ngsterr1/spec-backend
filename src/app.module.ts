@@ -4,13 +4,11 @@ import { AppService } from './app.service';
 import { CitiesModule } from './cities/cities.module';
 import { StatusesModule } from './statuses/statuses.module';
 import { UsersModule } from './users/users.module';
-import { UserModule } from './user/user.module';
 import { TasksModule } from './tasks/tasks.module';
 import { FormsModule } from './forms/forms.module';
 import { StatModule } from './stat/stat.module';
 import { ConfigModule } from '@nestjs/config';
 import { SharedModule } from './shared/shared.module';
-import { AdminModule } from './admin/admin.module';
 import { PrismaService } from './shared/prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
 import { CategoriesModule } from './categories/categories.module';
@@ -26,11 +24,9 @@ import { CategoriesModule } from './categories/categories.module';
     CitiesModule,
     StatusesModule,
     UsersModule,
-    UserModule,
     TasksModule,
     FormsModule,
     StatModule,
-    AdminModule,
     CategoriesModule,
   ],
   controllers: [AppController],

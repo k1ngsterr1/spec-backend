@@ -11,7 +11,7 @@ export class CitiesService {
   ) {}
 
   async create(data: CreateCityDto) {
-    const city = await this.prisma.city.create({
+    const city = await this.prisma.cities.create({
       data: {
         name: data.name,
       },
@@ -21,11 +21,11 @@ export class CitiesService {
   }
 
   findAll() {
-    return this.prisma.city.findMany();
+    return this.prisma.cities.findMany();
   }
 
   findOne(id: number) {
-    return this.prisma.city.findFirst({
+    return this.prisma.cities.findFirst({
       where: { id },
     });
   }

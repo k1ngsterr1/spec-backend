@@ -1,16 +1,16 @@
 export class CreateTaskDto {
-  cityId: number;
-  cityArea?: string;
-  categoryId: number;
-  executeAt?: string; // Будем конвертировать в Date
+  city_id: number;
+  city_area?: string; // ✅ Matches "city_area"
+  category_id: number; // ✅ Matches "category_id"
+  execute_at?: string; // ✅ Matches "execute_at", to be converted to Date
   description?: string;
-  priceMin: number;
-  priceMax: number;
+  price_min: number; // ✅ Matches "price_min"
+  price_max: number; // ✅ Matches "price_max"
   commission: number;
   phone: string;
   address: string;
-  statusId: number;
-  creatorUserId: number;
-  performerUserId?: number;
-  emergencyCall?: boolean;
+  status_id: number; // ✅ Matches "status_id"
+  creator_user_id: number; // ✅ Matches "creator_user_id"
+  performer_user_id?: number; // ✅ Matches "performer_user_id"
+  emergency_call?: boolean; // ✅ Matches "emergency_call"
 }
