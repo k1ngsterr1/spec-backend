@@ -21,14 +21,6 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll(@Query('role') role?: string, @Query('fullName') fullName?: string) {
-    return this.usersService.findAll({
-      role: role,
-      fullName: fullName,
-    });
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
