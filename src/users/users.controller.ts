@@ -21,6 +21,16 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Post('receive-sms')
+  receiveSms(@Body() sendSMSDto: any) {
+    return this.usersService.receiveSms(sendSMSDto);
+  }
+
+  @Post('send-sms')
+  sendSms(@Body() sendSMSDto: any) {
+    return this.usersService.sendSms(sendSMSDto);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);

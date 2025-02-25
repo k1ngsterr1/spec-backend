@@ -1,13 +1,19 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || '123',
-      signOptions: { expiresIn: '7d' },
+    ConfigModule, // Загружаем переменные окружения
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET') || 'fallback_secret',
+        signOptions: { expiresIn: '7d' },
+      }),
     }),
   ],
-  exports: [JwtModule], // Экспортируем для использования в других модулях
+  exports: [JwtModule],
 })
 export class SharedModule {}

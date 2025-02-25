@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
-import { JwtService } from '@nestjs/jwt';
+import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
+  imports: [SharedModule], // SharedModule уже содержит JwtModule
   controllers: [UsersController],
-  providers: [UsersService, PrismaService, JwtService],
+  providers: [UsersService, PrismaService], // ❌ Убрали JwtService и ConfigService (они уже в SharedModule)
 })
 export class UsersModule {}

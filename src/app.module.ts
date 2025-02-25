@@ -10,17 +10,15 @@ import { StatModule } from './stat/stat.module';
 import { ConfigModule } from '@nestjs/config';
 import { SharedModule } from './shared/shared.module';
 import { PrismaService } from './shared/prisma/prisma.service';
-import { JwtModule } from '@nestjs/jwt';
 import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
-    SharedModule,
-
     ConfigModule.forRoot({
       envFilePath: `.env.${process.env.NODE_ENV || 'development'}`, // Load the correct .env file
       isGlobal: true,
     }),
+    SharedModule,
     CitiesModule,
     StatusesModule,
     UsersModule,
