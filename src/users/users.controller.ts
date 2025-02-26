@@ -16,19 +16,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @Post('receive-sms')
-  receiveSms(@Body() sendSMSDto: any) {
-    return this.usersService.receiveSms(sendSMSDto);
-  }
-
   @Post('send-sms')
-  sendSms(@Body() sendSMSDto: any) {
+  receiveSms(@Body() sendSMSDto: any) {
     return this.usersService.sendSms(sendSMSDto);
+  }
+
+  @Post('verify-sms')
+  sendSms(@Body() sendSMSDto: any) {
+    return this.usersService.verifySms(sendSMSDto);
   }
 
   @Get(':id')
