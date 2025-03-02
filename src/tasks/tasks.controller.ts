@@ -23,24 +23,29 @@ export class TasksController {
 
   @Get()
   findAll(
-    @Query('city_id') city_id?: number,
-    @Query('category_id') category_id?: number,
-    @Query('status_id') status_id?: number,
-    @Query('performer_user_id') performer_user_id?: number,
+    @Query('city_id') city_id?: string,
+    @Query('category_id') category_id?: string,
+    @Query('status_id') status_id?: any, // Теперь поддерживает массив
+    @Query('performer_user_id') performer_user_id?: string,
     @Query('executeAtFrom') executeAtFrom?: string,
     @Query('executeAtTo') executeAtTo?: string,
-    @Query('emergency_call') emergency_call?: boolean,
+    @Query('emergency_call') emergency_call?: string,
   ) {
     return this.tasksService.findAll({
       city_id: city_id ? Number(city_id) : undefined,
       category_id: category_id ? Number(category_id) : undefined,
-      status_id: status_id ? Number(status_id) : undefined,
+      status_id: status_id
+        ? Array.isArray(status_id)
+          ? status_id.map(Number) // Преобразуем в массив чисел
+          : [Number(status_id)] // Если один статус - делаем массив
+        : undefined,
       performer_user_id: performer_user_id
         ? Number(performer_user_id)
         : undefined,
       executeAtFrom: executeAtFrom || undefined,
       executeAtTo: executeAtTo || undefined,
-      emergency_call: emergency_call || undefined,
+      emergency_call:
+        emergency_call !== undefined ? emergency_call === 'true' : undefined,
     });
   }
 

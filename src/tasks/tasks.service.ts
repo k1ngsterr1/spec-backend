@@ -16,6 +16,7 @@ export class TasksService {
     const task = await this.prisma.tasks.create({
       data: {
         category_id: data.category_id,
+        comment: data.comment,
         title: data.title,
         execute_at: data.execute_at ? new Date(data.execute_at) : null,
         description: data.description,
@@ -38,7 +39,7 @@ export class TasksService {
   async findAll(query: {
     city_id?: number;
     category_id?: number;
-    status_id?: number;
+    status_id?: any;
     performer_user_id?: number;
     executeAtFrom?: string;
     executeAtTo?: string;
@@ -48,7 +49,14 @@ export class TasksService {
 
     if (query.city_id) where.city_id = query.city_id;
     if (query.category_id) where.category_id = query.category_id;
-    if (query.status_id) where.status_id = query.status_id;
+
+    // Поддержка одного или нескольких статус ID
+    if (query.status_id) {
+      where.status_id = Array.isArray(query.status_id)
+        ? { in: query.status_id.map(Number) }
+        : Number(query.status_id);
+    }
+
     if (query.performer_user_id)
       where.performer_user_id = query.performer_user_id;
 
@@ -62,7 +70,7 @@ export class TasksService {
       };
     }
 
-    console.log('where:', where); // Отладочный лог
+    console.log('WHERE:', where); // Логируем перед запросом
 
     const tasks = await this.prisma.tasks.findMany({ where });
 
