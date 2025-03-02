@@ -26,6 +26,24 @@ export class UsersController {
     return this.usersService.verifySms(sendSMSDto);
   }
 
+  @Get('')
+  findMany(
+    @Query()
+    query: {
+      id?: string;
+      username?: string;
+      fullname?: string;
+      role?: string;
+    },
+  ) {
+    return this.usersService.findAll({
+      id: query.id ? +query.id : undefined,
+      username: query.username,
+      fullname: query.fullname,
+      role: query.role,
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);

@@ -1,5 +1,10 @@
-import { HttpException, Injectable, Query } from '@nestjs/common';
-import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+  Query,
+} from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -151,27 +156,86 @@ export class UsersService {
       throw new HttpException('Failed to verify the code', 500);
     }
   }
+  async findAll(query: {
+    id?: number;
+    username?: string;
+    fullname?: string;
+    role?: string;
+  }) {
+    const where: any = {};
 
-  async findAll(query: { role?: string; fullName?: string }) {
-    const users = await this.prisma.users.findMany({
-      where: {
-        role: query.role,
-        fullname: query.fullName,
-      },
-    });
+    if (query.id !== undefined) {
+      where.id = query.id;
+    }
+    if (query.username !== undefined) {
+      where.username = { contains: query.username, mode: 'insensitive' }; // Поиск по частичному совпадению
+    }
+    if (query.fullname !== undefined) {
+      where.fullname = { contains: query.fullname, mode: 'insensitive' }; // Поиск по частичному совпадению
+    }
+    if (query.role !== undefined) {
+      where.role = query.role;
+    }
+
+    const users = await this.prisma.users.findMany({ where });
 
     return users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const user = await this.prisma.users.findUnique({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException(`Пользователь с ID ${id} не найден`);
+    }
+
+    return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  /** Обновление пользователя */
+  async update(id: number, updateUserDto: any) {
+    const existingUser = await this.prisma.users.findUnique({ where: { id } });
+
+    if (!existingUser) {
+      throw new NotFoundException(`Пользователь с ID ${id} не найден`);
+    }
+
+    // Формируем объект `data`, добавляя только переданные поля
+    const data: any = {};
+
+    if (updateUserDto.username !== undefined) {
+      data.username = updateUserDto.username;
+    }
+    if (updateUserDto.fullname !== undefined) {
+      data.fullname = updateUserDto.fullname;
+    }
+    if (updateUserDto.phone !== undefined) {
+      data.phone = updateUserDto.phone;
+    }
+
+    // Если объект `data` пустой, ничего не обновляем
+    if (Object.keys(data).length === 0) {
+      throw new BadRequestException('Нет данных для обновления');
+    }
+
+    const updatedUser = await this.prisma.users.update({
+      where: { id },
+      data,
+    });
+
+    return { success: `Пользователь #${id} обновлён`, user: updatedUser };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  /** Удаление пользователя */
+  async remove(id: number) {
+    const existingUser = await this.prisma.users.findUnique({ where: { id } });
+
+    if (!existingUser) {
+      throw new NotFoundException(`Пользователь с ID ${id} не найден`);
+    }
+
+    await this.prisma.users.delete({ where: { id } });
+
+    return { success: `Пользователь #${id} удалён` };
   }
 }

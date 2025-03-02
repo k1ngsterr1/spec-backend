@@ -83,6 +83,7 @@ export class TasksService {
 
   /** Обновление задачи */
   async update(id: number, updateTaskDto: UpdateTaskDto) {
+    console.log(updateTaskDto);
     // Проверяем, существует ли задача
     const existingTask = await this.prisma.tasks.findUnique({ where: { id } });
 
@@ -93,7 +94,7 @@ export class TasksService {
     const updatedTask = await this.prisma.tasks.update({
       where: { id },
       data: {
-        city_area: updateTaskDto.city_area,
+        city_area: updateTaskDto.city_area || undefined,
         execute_at: updateTaskDto.execute_at
           ? new Date(updateTaskDto.execute_at)
           : undefined,
