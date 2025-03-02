@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SharedModule } from './shared/shared.module';
 import { PrismaService } from './shared/prisma/prisma.service';
 import { CategoriesModule } from './categories/categories.module';
+import { TasksHistoryModule } from './tasks-history/tasks-history.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CategoriesModule } from './categories/categories.module';
     FormsModule,
     StatModule,
     CategoriesModule,
+    TasksHistoryModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

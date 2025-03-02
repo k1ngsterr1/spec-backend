@@ -1,6 +1,8 @@
+import { TestingModule } from '@nestjs/testing';
 export class CreateTaskDto {
   city_id: number;
   city_area?: string; // ✅ Matches "city_area"
+  title: string;
   category_id: number; // ✅ Matches "category_id"
   execute_at?: string; // ✅ Matches "execute_at", to be converted to Date
   description?: string;
