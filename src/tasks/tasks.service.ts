@@ -108,6 +108,7 @@ export class TasksService {
           ? new Date(updateTaskDto.execute_at)
           : undefined,
         description: updateTaskDto.description,
+        comment: updateTaskDto.comment,
         price_min: updateTaskDto.price_min,
         price_max: updateTaskDto.price_max,
         commission: updateTaskDto.commission,
