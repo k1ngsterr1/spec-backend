@@ -43,26 +43,27 @@ export class TasksService {
     executeAtTo?: string;
     emergency_call?: boolean;
   }) {
-    const tasks = await this.prisma.tasks.findMany({
-      where: {
-        city_id: query.city_id,
-        category_id: query.category_id,
-        status_id: query.status_id,
-        performer_user_id: query.performer_user_id,
-        emergency_call: query.emergency_call,
-        execute_at:
-          query.executeAtFrom || query.executeAtTo
-            ? {
-                gte: query.executeAtFrom
-                  ? new Date(query.executeAtFrom)
-                  : undefined,
-                lte: query.executeAtTo
-                  ? new Date(query.executeAtTo)
-                  : undefined,
-              }
-            : undefined,
-      },
-    });
+    const where: any = {};
+
+    if (query.city_id) where.city_id = query.city_id;
+    if (query.category_id) where.category_id = query.category_id;
+    if (query.status_id) where.status_id = query.status_id;
+    if (query.performer_user_id)
+      where.performer_user_id = query.performer_user_id;
+
+    // Проверяем, передан ли emergency_call в query (true/false)
+    if ('emergency_call' in query) where.emergency_call = query.emergency_call;
+
+    if (query.executeAtFrom || query.executeAtTo) {
+      where.execute_at = {
+        ...(query.executeAtFrom ? { gte: new Date(query.executeAtFrom) } : {}),
+        ...(query.executeAtTo ? { lte: new Date(query.executeAtTo) } : {}),
+      };
+    }
+
+    console.log('where:', where); // Отладочный лог
+
+    const tasks = await this.prisma.tasks.findMany({ where });
 
     return tasks;
   }

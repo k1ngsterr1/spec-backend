@@ -40,7 +40,7 @@ export class TasksController {
         : undefined,
       executeAtFrom: executeAtFrom || undefined,
       executeAtTo: executeAtTo || undefined,
-      emergency_call: emergency_call === true,
+      emergency_call: emergency_call || undefined,
     });
   }
 
