@@ -16,6 +16,7 @@ export class TasksService {
     const task = await this.prisma.tasks.create({
       data: {
         category_id: data.category_id,
+        title: data.title,
         execute_at: data.execute_at ? new Date(data.execute_at) : null,
         description: data.description,
         price_min: data.price_min,
