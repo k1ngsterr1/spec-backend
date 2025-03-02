@@ -6,6 +6,7 @@ export class CreateTaskDto {
   category_id: number; // ✅ Matches "category_id"
   execute_at?: string; // ✅ Matches "execute_at", to be converted to Date
   description?: string;
+  comment?: string;
   price_min: number; // ✅ Matches "price_min"
   price_max: number; // ✅ Matches "price_max"
   commission: number;
