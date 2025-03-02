@@ -64,7 +64,8 @@ model tasks {
   price_min                            Float
   price_max                            Float
   price_fact                           Float?
-  comment                               String?
+  comment                              String?
+  isPaid                               Boolean? 
   phone                                String
   address                              String
   status_id                            Int?
