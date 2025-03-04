@@ -99,9 +99,7 @@ export class UsersService {
       'Content-Type': 'application/json',
     };
 
-    const { phone, code, request_id } = data;
-
-    console.log(data);
+    const { phone, code, user_agent, request_id } = data;
 
     try {
       const verifyResponse = await axios.post(
@@ -109,6 +107,7 @@ export class UsersService {
         {
           phone_number: phone,
           code,
+          user_agent,
           request_id,
         },
         { headers: HEADERS },
@@ -134,6 +133,7 @@ export class UsersService {
       user = await this.prisma.users.create({
         data: {
           phone,
+          user_agent,
           password_hash: '',
           priority: 0,
           role: 'performer',
@@ -156,6 +156,7 @@ export class UsersService {
       throw new HttpException('Failed to verify the code', 500);
     }
   }
+
   async findAll(query: {
     id?: number;
     username?: string;

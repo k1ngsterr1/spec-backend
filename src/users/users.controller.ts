@@ -26,6 +26,11 @@ export class UsersController {
     return this.usersService.verifySms(sendSMSDto);
   }
 
+  @Post('save-user-agent')
+  sendUserAgent(@Body() sendSMSDto: any) {
+    return this.usersService.verifySms(sendSMSDto);
+  }
+
   @Get('')
   findMany(
     @Query()
