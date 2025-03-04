@@ -65,6 +65,7 @@ export class TasksService {
 
     console.log(`Задача ${taskId} отмечена как оплаченная.`);
   }
+
   /** Получение всех задач */
   async findAll(query: {
     city_id?: number;
@@ -100,9 +101,10 @@ export class TasksService {
       };
     }
 
-    console.log('WHERE:', where); // Логируем перед запросом
-
-    const tasks = await this.prisma.tasks.findMany({ where });
+    const tasks = await this.prisma.tasks.findMany({
+      where,
+      include: { balance_history: true },
+    });
 
     return tasks;
   }
