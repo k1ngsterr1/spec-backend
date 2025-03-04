@@ -19,6 +19,8 @@ export class UsersService {
   ) {}
 
   async sendSms(data: any) {
+    const smsRequests = new Map<string, { count: number; timestamp: number }>();
+
     const BASE_URL = this.configService.get<string>('TELEGRAM_GATEWAY_URL');
     const TOKEN = this.configService.get<string>('TELEGRAM_GATEWAY_TOKEN');
 
@@ -28,6 +30,17 @@ export class UsersService {
     };
 
     const phoneNumber = data.phone;
+    const now = Date.now();
+
+    if (smsRequests.has(phoneNumber)) {
+      const request = smsRequests.get(phoneNumber) as any;
+      if (request.count >= 3 && now - request.timestamp < 3600000) {
+        throw new HttpException('Too many requests. Try later.', 429);
+      }
+      request.count++;
+    } else {
+      smsRequests.set(phoneNumber, { count: 1, timestamp: now });
+    }
 
     // Step 1: Check if the phone number can receive messages
     let requestId: string;
