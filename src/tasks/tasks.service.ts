@@ -3,6 +3,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { SetPaidDto } from './dto/set-paid.dto';
 
 @Injectable()
 export class TasksService {
@@ -35,6 +36,35 @@ export class TasksService {
     return { success: 'Задание успешно добавлено!', task: task };
   }
 
+  async isTaskPaid(taskId: number): Promise<boolean> {
+    const history = await this.prisma.balance_history.findFirst({
+      where: { task_id: taskId },
+    });
+
+    return history !== null; // Если запись есть, значит оплачено
+  }
+
+  async markTaskAsPaid(data: SetPaidDto) {
+    const { taskId, userId, amount, reasonId } = data;
+
+    // Проверяем, не оплачена ли уже задача
+    const alreadyPaid = await this.isTaskPaid(taskId);
+    if (alreadyPaid) {
+      throw new Error('Задача уже оплачена!');
+    }
+
+    // Обновляем поле is_paid в tasks
+    await this.prisma.balance_history.create({
+      data: {
+        task_id: taskId,
+        user_id: userId,
+        reason_id: reasonId, // Например, 1 = "Оплата выполнена"
+        val: amount,
+      },
+    });
+
+    console.log(`Задача ${taskId} отмечена как оплаченная.`);
+  }
   /** Получение всех задач */
   async findAll(query: {
     city_id?: number;

@@ -11,6 +11,7 @@ import {
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { SetPaidDto } from './dto/set-paid.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -54,9 +55,13 @@ export class TasksController {
     return this.tasksService.findOne(+id);
   }
 
+  @Patch('/set-paid')
+  setPaid(@Body() setPaidDto: SetPaidDto) {
+    return this.tasksService.markTaskAsPaid(setPaidDto);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    console.log(updateTaskDto);
     return this.tasksService.update(+id, updateTaskDto);
   }
 
