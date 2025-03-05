@@ -18,6 +18,17 @@ export class UsersService {
     private readonly configService: ConfigService,
   ) {}
 
+  async getMe(userId: any) {
+    const user = await this.prisma.users.findFirst({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
+    return user;
+  }
+
   async sendSms(data: any) {
     const smsRequests = new Map<string, { count: number; timestamp: number }>();
 

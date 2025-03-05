@@ -7,13 +7,22 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserAuthGuard } from 'src/shared/guards/user.auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get('me')
+  @UseGuards(UserAuthGuard)
+  async getMe(@Request() req) {
+    return await this.usersService.getMe(req.user.sub);
+  }
 
   @Post('send-sms')
   receiveSms(@Body() sendSMSDto: any) {
