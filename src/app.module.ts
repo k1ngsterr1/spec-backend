@@ -12,6 +12,7 @@ import { SharedModule } from './shared/shared.module';
 import { PrismaService } from './shared/prisma/prisma.service';
 import { CategoriesModule } from './categories/categories.module';
 import { TasksHistoryModule } from './tasks-history/tasks-history.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { TasksHistoryModule } from './tasks-history/tasks-history.module';
     StatModule,
     CategoriesModule,
     TasksHistoryModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

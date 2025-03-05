@@ -46,7 +46,10 @@ export class UsersService {
     if (smsRequests.has(phoneNumber)) {
       const request = smsRequests.get(phoneNumber) as any;
       if (request.count >= 3 && now - request.timestamp < 3600000) {
-        throw new HttpException('Too many requests. Try later.', 429);
+        throw new HttpException(
+          'Слишком много запросов. Попробуйте позже.',
+          429,
+        );
       }
       request.count++;
     } else {
