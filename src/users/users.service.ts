@@ -77,7 +77,7 @@ export class UsersService {
       console.error(
         `Telegram Gateway Error (checkSendAbility): ${error.message}`,
       );
-      throw new HttpException('Failed to verify phone number', 500);
+      throw new HttpException('Невозможно подтвердить номер телефона', 500);
     }
 
     // Step 2: Send verification code via Telegram Gateway
@@ -128,6 +128,10 @@ export class UsersService {
 
     const { phone, code, user_agent, request_id } = data;
 
+    if (!code || code == '') {
+      throw new HttpException(`Неверный код верификации`, 400);
+    }
+
     try {
       const verifyResponse = await axios.post(
         `${BASE_URL}checkVerificationStatus`,
@@ -140,11 +144,10 @@ export class UsersService {
         { headers: HEADERS },
       );
 
-      if (!verifyResponse.data?.ok) {
-        throw new HttpException(
-          `Invalid verification code: ${verifyResponse.data?.error}`,
-          400,
-        );
+      console.log('verify response:', verifyResponse.data);
+
+      if (!verifyResponse.data?.result.code_valid) {
+        throw new HttpException(`Неверный код верификации`, 400);
       }
 
       // Step 2: Check if user already exists
@@ -153,7 +156,7 @@ export class UsersService {
       });
 
       if (user) {
-        throw new HttpException('User already exists', 400);
+        throw new HttpException('Пользователь уже существует', 400);
       }
 
       // Step 3: Create user after successful verification
