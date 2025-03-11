@@ -32,7 +32,7 @@ export class AdminService {
     admin = await this.prisma.users.create({
       data: {
         username,
-        phone: '',
+        phone: undefined,
         user_agent: '',
         password_hash: hashedPassword, // Store hashed password
         priority: 0,

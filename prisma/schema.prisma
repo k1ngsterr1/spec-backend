@@ -65,7 +65,7 @@ model tasks {
   price_max                            Float
   price_fact                           Float?
   comment                              String?
-  phone                                String
+  phone                                String?
   address                              String
   status_id                            Int?
   creator_user_id                      Int?
@@ -95,7 +95,7 @@ model users {
   id                                   Int               @id @default(autoincrement())
   username                             String?           @unique
   fullname                             String?
-  phone                                String            @unique
+  phone                                String?            @unique
   password_hash                        String
   created_at                           DateTime?         @default(now()) @db.Timestamp(6)
   app_token                            String?

@@ -5,8 +5,8 @@ import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
-  imports: [SharedModule], // SharedModule уже содержит JwtModule
+  imports: [SharedModule],
   controllers: [UsersController],
-  providers: [UsersService, PrismaService], // ❌ Убрали JwtService и ConfigService (они уже в SharedModule)
+  providers: [UsersService, PrismaService],
 })
 export class UsersModule {}
