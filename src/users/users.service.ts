@@ -67,17 +67,27 @@ export class UsersService {
 
       if (!checkAbilityResponse.data?.ok) {
         throw new HttpException(
-          `User cannot receive messages: ${checkAbilityResponse.data?.error}`,
+          {
+            status: 400,
+            message: `Невозможно отправить сообщение: ${checkAbilityResponse.data?.error || 'Неизвестная ошибка'}`,
+          },
           400,
         );
       }
-
       requestId = checkAbilityResponse.data.result.request_id;
     } catch (error) {
       console.error(
         `Telegram Gateway Error (checkSendAbility): ${error.message}`,
       );
-      throw new HttpException('Невозможно подтвердить номер телефона', 500);
+      throw new HttpException(
+        {
+          status: 500,
+          message: 'Ошибка связи с сервисом подтверждения номера.',
+          details:
+            error.response?.data || error.message || 'Неизвестная ошибка',
+        },
+        500,
+      );
     }
 
     // Step 2: Send verification code via Telegram Gateway
