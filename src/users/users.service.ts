@@ -144,9 +144,14 @@ export class UsersService {
         { headers: HEADERS },
       );
 
-      console.log('verify response:', verifyResponse.data);
+      console.log(
+        'verify response:',
+        verifyResponse.data.result.verification_status,
+      );
 
-      if (!verifyResponse.data?.result.code_valid) {
+      if (
+        verifyResponse.data?.result.verification_status.status !== 'code_valid'
+      ) {
         throw new HttpException(`Неверный код верификации`, 400);
       }
 
