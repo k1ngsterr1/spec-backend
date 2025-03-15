@@ -178,13 +178,30 @@ export class TasksService {
   /** Обновление задачи */
   async update(id: number, updateTaskDto: UpdateTaskDto) {
     console.log(updateTaskDto);
+
     // Проверяем, существует ли задача
-    const existingTask = await this.prisma.tasks.findUnique({ where: { id } });
+    const existingTask = await this.prisma.tasks.findUnique({
+      where: { id },
+    });
 
     if (!existingTask) {
       throw new NotFoundException(`Задание с ID ${id} не найдено`);
     }
 
+    // ✅ Проверяем, существует ли исполнитель (performer_user_id)
+    if (updateTaskDto.performer_user_id) {
+      const performerExists = await this.prisma.users.findUnique({
+        where: { id: updateTaskDto.performer_user_id },
+      });
+
+      if (!performerExists) {
+        throw new NotFoundException(
+          `Исполнитель с ID ${updateTaskDto.performer_user_id} не найден`,
+        );
+      }
+    }
+
+    // ✅ Обновляем задачу
     const updatedTask = await this.prisma.tasks.update({
       where: { id },
       data: {
