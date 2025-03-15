@@ -261,7 +261,14 @@ export class UsersService {
       where.role = query.role;
     }
 
-    const users = await this.prisma.users.findMany({ where });
+    const users = await this.prisma.users.findMany({
+      where,
+      select: {
+        id: true,
+        username: true,
+        fullname: true,
+      },
+    });
 
     return users;
   }
