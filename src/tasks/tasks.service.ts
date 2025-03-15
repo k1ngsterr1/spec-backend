@@ -156,7 +156,17 @@ export class TasksService {
 
     const tasks = await this.prisma.tasks.findMany({
       where,
-      include: { balance_history: true },
+      include: {
+        balance_history: true,
+        users_tasks_performer_user_idTousers: {
+          select: {
+            id: true,
+            username: true,
+            fullname: true,
+            phone: true,
+          },
+        },
+      },
     });
 
     return tasks;
@@ -177,8 +187,6 @@ export class TasksService {
 
   /** Обновление задачи */
   async update(id: number, updateTaskDto: UpdateTaskDto) {
-    console.log(updateTaskDto);
-
     // Проверяем, существует ли задача
     const existingTask = await this.prisma.tasks.findUnique({
       where: { id },
