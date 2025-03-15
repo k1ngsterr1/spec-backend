@@ -127,6 +127,44 @@ export class UsersService {
     };
   }
 
+  async getBalanceStats(userId: number) {
+    const balanceHistory = await this.prisma.balance_history.findMany({
+      where: { user_id: userId },
+      select: {
+        reason_id: true,
+        val: true,
+      },
+    });
+
+    // Check if the user has balance history
+    if (!balanceHistory.length) {
+      return {
+        userId,
+        totalBalance: 0,
+        details: {},
+      };
+    }
+
+    // Aggregate balance statistics
+    const stats: Record<number, { total: number; count: number }> = {};
+
+    for (const entry of balanceHistory) {
+      if (entry.reason_id === null) continue; // Ignore invalid entries
+
+      if (!stats[entry.reason_id]) {
+        stats[entry.reason_id] = { total: 0, count: 0 };
+      }
+      stats[entry.reason_id].total += entry.val;
+      stats[entry.reason_id].count += 1;
+    }
+
+    return {
+      userId,
+      totalBalance: balanceHistory.reduce((sum, entry) => sum + entry.val, 0),
+      details: stats,
+    };
+  }
+
   async verifySms(data: any) {
     const BASE_URL = this.configService.get<string>('TELEGRAM_GATEWAY_URL');
     const TOKEN = this.configService.get<string>('TELEGRAM_GATEWAY_TOKEN');
