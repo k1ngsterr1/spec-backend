@@ -206,6 +206,16 @@ export class TasksService {
         performer_user_id: updateTaskDto.performer_user_id ?? null,
         emergency_call: updateTaskDto.emergency_call ?? false,
       },
+      include: {
+        users_tasks_performer_user_idTousers: {
+          select: {
+            id: true,
+            username: true,
+            fullname: true,
+            phone: true,
+          },
+        },
+      },
     });
 
     return { success: `Задание #${id} обновлено`, task: updatedTask };
