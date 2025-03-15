@@ -36,6 +36,62 @@ export class TasksService {
     return { success: 'Задание успешно добавлено!', task: task };
   }
 
+  async findArchivedTasks(is_paid?: boolean) {
+    const last24Hours = new Date();
+    last24Hours.setHours(last24Hours.getHours() - 24);
+
+    const tasks = await this.prisma.tasks.findMany({
+      where: {
+        status_id: 3, // Assuming 3 = "Completed"
+        execute_at: { gte: last24Hours }, // Tasks from the last 24 hours
+      },
+      include: {
+        balance_history: {
+          select: { id: true }, // Only check if a record exists
+        },
+      },
+      orderBy: {
+        execute_at: 'desc',
+      },
+    });
+
+    // Add `is_paid` status to each task
+    const tasksWithPaymentStatus = tasks.map((task) => ({
+      ...task,
+      is_paid: task.balance_history.length > 0, // If there are balance history records, the task is paid
+    }));
+
+    // Apply filtering based on `is_paid` query parameter
+    if (is_paid !== undefined) {
+      return tasksWithPaymentStatus.filter((task) => task.is_paid === is_paid);
+    }
+
+    return tasksWithPaymentStatus; // Return all if no filter is applied
+  }
+
+  async createText(data: CreateTaskDto) {
+    const task = await this.prisma.tasks.create({
+      data: {
+        category_id: data.category_id,
+        comment: data.comment,
+        title: data.title,
+        execute_at: data.execute_at ? new Date(data.execute_at) : null,
+        description: data.description,
+        price_min: data.price_min,
+        price_max: data.price_max,
+        commission: data.commission,
+        phone: data.phone,
+        address: data.address,
+        status_id: data.status_id,
+        creator_user_id: data.creator_user_id,
+        performer_user_id: data.performer_user_id ?? null,
+        emergency_call: data.emergency_call ?? false,
+      },
+    });
+
+    return { success: 'Задание успешно добавлено!', task: task };
+  }
+
   async isTaskPaid(taskId: number): Promise<boolean> {
     const history = await this.prisma.balance_history.findFirst({
       where: { task_id: taskId },

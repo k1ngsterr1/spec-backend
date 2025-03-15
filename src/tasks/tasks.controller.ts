@@ -55,6 +55,12 @@ export class TasksController {
     return this.tasksService.findOne(+id);
   }
 
+  @Get('archive')
+  async findArchivedTasks(@Query('isPaid') is_paid?: string) {
+    const isPaidFilter = is_paid !== undefined ? is_paid === 'true' : undefined;
+    return this.tasksService.findArchivedTasks(isPaidFilter);
+  }
+
   @Patch('/set-paid')
   setPaid(@Body() setPaidDto: SetPaidDto) {
     return this.tasksService.markTaskAsPaid(setPaidDto);
