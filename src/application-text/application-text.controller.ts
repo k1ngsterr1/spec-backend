@@ -25,17 +25,4 @@ export class ApplicationTextController {
   findOne() {
     return this.applicationTextService.findOne();
   }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateApplicationTextDto: CreateApplicationTextDto,
-  ) {
-    return this.applicationTextService.update(+id, updateApplicationTextDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.applicationTextService.remove(+id);
-  }
 }

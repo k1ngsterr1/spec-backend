@@ -7,10 +7,7 @@ import { SetPaidDto } from './dto/set-paid.dto';
 
 @Injectable()
 export class TasksService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   /** Создание новой задачи */
   async create(data: CreateTaskDto) {
@@ -89,7 +86,7 @@ export class TasksService {
       },
     });
 
-    return { success: 'Задание успешно добавлено!', task: task };
+    return { success: 'Текст успешно добавлен!', task: task };
   }
 
   async isTaskPaid(taskId: number): Promise<boolean> {
