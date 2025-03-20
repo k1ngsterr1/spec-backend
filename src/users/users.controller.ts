@@ -34,6 +34,11 @@ export class UsersController {
     return this.usersService.verifySms(sendSMSDto);
   }
 
+  @Post('verify-phone')
+  async verifyPhone(@Body() phoneNumber: string) {
+    return await this.usersService.verifyPhoneAndGenerateJwt(phoneNumber);
+  }
+
   @Post('save-user-agent')
   sendUserAgent(@Body() sendSMSDto: any) {
     return this.usersService.verifySms(sendSMSDto);

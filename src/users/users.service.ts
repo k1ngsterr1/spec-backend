@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
   Query,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
@@ -283,6 +284,19 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async verifyPhoneAndGenerateJwt(phone: string) {
+    const user = await this.prisma.users.findUnique({ where: { phone } });
+
+    if (!user) {
+      throw new UnauthorizedException('Phone number not found');
+    }
+
+    const payload = { id: user.id, phone: user.phone, role: user.role };
+    const token = this.jwtService.sign(payload);
+
+    return { token };
   }
 
   /** Обновление пользователя */
