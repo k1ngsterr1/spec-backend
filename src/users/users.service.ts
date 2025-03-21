@@ -286,7 +286,9 @@ export class UsersService {
     return user;
   }
 
-  async verifyPhoneAndGenerateJwt(phone: string) {
+  async verifyPhoneAndGenerateJwt(data: any) {
+    const phone = data.phone;
+
     const user = await this.prisma.users.findUnique({ where: { phone } });
 
     if (!user) {

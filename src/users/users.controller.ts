@@ -35,8 +35,8 @@ export class UsersController {
   }
 
   @Post('verify-phone')
-  async verifyPhone(@Body() phoneNumber: string) {
-    return await this.usersService.verifyPhoneAndGenerateJwt(phoneNumber);
+  async verifyPhone(@Body() data: any) {
+    return await this.usersService.verifyPhoneAndGenerateJwt(data);
   }
 
   @Post('save-user-agent')
