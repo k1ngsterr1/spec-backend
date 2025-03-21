@@ -26,7 +26,7 @@ export class TasksController {
   findAll(
     @Query('city_id') city_id?: string,
     @Query('category_id') category_id?: string,
-    @Query('status_id') status_id?: any, // Теперь поддерживает массив
+    @Query('status_id') status_id?: any,
     @Query('performer_user_id') performer_user_id?: string,
     @Query('executeAtFrom') executeAtFrom?: string,
     @Query('executeAtTo') executeAtTo?: string,
