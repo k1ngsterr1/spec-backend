@@ -245,30 +245,37 @@ export class UsersService {
     id?: number;
     username?: string;
     fullname?: string;
-    role?: string;
+    city_id: number;
+    phoneNumber?: string;
   }) {
-    const where: any = {};
+    const where: any = {
+      role: 'performer',
+      city_id: query.city_id,
+    };
+
+    console.log('query:', query);
 
     if (query.id !== undefined) {
       where.id = query.id;
     }
-    if (query.username !== undefined) {
-      where.username = { contains: query.username, mode: 'insensitive' }; // Поиск по частичному совпадению
+
+    if (query.fullname) {
+      const nameParts = query.fullname.split(' ').filter(Boolean); // Split by space
+      where.OR = nameParts.map((part) => ({
+        fullname: { contains: part, mode: 'insensitive' },
+      }));
     }
-    if (query.fullname !== undefined) {
-      where.fullname = { contains: query.fullname, mode: 'insensitive' }; // Поиск по частичному совпадению
-    }
-    if (query.role !== undefined) {
-      where.role = query.role;
+
+    if (query.phoneNumber) {
+      where.phone = query.phoneNumber;
     }
 
     const users = await this.prisma.users.findMany({
-      where: {
-        role: 'performer',
-      },
+      where,
       select: {
         id: true,
-        username: true,
+        phone: true,
+        city_id: true,
         fullname: true,
       },
     });

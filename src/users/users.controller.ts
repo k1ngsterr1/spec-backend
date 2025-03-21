@@ -49,16 +49,16 @@ export class UsersController {
     @Query()
     query: {
       id?: string;
-      username?: string;
       fullname?: string;
-      role?: string;
+      city_id: number;
+      phoneNumber?: string;
     },
   ) {
     return this.usersService.findAll({
       id: query.id ? +query.id : undefined,
-      username: query.username,
+      city_id: Number(query.city_id),
+      phoneNumber: query.phoneNumber,
       fullname: query.fullname,
-      role: query.role,
     });
   }
 
