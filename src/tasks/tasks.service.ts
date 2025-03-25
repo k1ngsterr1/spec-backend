@@ -52,7 +52,6 @@ export class TasksService {
       },
     });
 
-    // Add `is_paid` status to each task
     const tasksWithPaymentStatus = tasks.map((task) => ({
       ...task,
       is_paid: task.balance_history.length > 0, // If there are balance history records, the task is paid

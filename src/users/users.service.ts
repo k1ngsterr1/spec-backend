@@ -57,8 +57,8 @@ export class UsersService {
       smsRequests.set(phoneNumber, { count: 1, timestamp: now });
     }
 
-    // Step 1: Check if the phone number can receive messages
     let requestId: string;
+
     try {
       const checkAbilityResponse = await axios.post(
         `${BASE_URL}checkSendAbility`,
@@ -210,7 +210,10 @@ export class UsersService {
       });
 
       if (user) {
-        throw new HttpException('Пользователь уже существует', 400);
+        const payload = { id: user.id, phone: user.phone, role: user.role };
+        const token = this.jwtService.sign(payload);
+
+        return { token };
       }
 
       // Step 3: Create user after successful verification
@@ -308,7 +311,6 @@ export class UsersService {
     return { token };
   }
 
-  /** Обновление пользователя */
   async update(id: number, updateUserDto: any) {
     const existingUser = await this.prisma.users.findUnique({ where: { id } });
 
@@ -342,7 +344,6 @@ export class UsersService {
     return { success: `Пользователь #${id} обновлён`, user: updatedUser };
   }
 
-  /** Удаление пользователя */
   async remove(id: number) {
     const existingUser = await this.prisma.users.findUnique({ where: { id } });
 
