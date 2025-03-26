@@ -34,17 +34,15 @@ export class TasksService {
   }
 
   /** Поиск исполнителей для рассылки пуш-уведомлений */
-  async findExecutorsForPush(
-    city_id: number,
-    category_id: number,
-    priority: number,
-  ) {
-    return this.prisma.users.findMany({
-      where: { city_id, priority, user_category: { some: { category_id } } },
+  async findExecutorsForPush(city_id: number, priority: number) {
+    const users = await this.prisma.users.findMany({
+      where: { city_id, priority },
       include: {
         fcm_token: true,
       },
     });
+
+    return users;
   }
 
   async findArchivedTasks(is_paid?: boolean) {

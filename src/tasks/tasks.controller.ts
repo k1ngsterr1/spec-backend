@@ -12,7 +12,7 @@ import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetPaidDto } from './dto/set-paid.dto';
-import * as admin from 'firebase-admin';
+import admin from 'src/firebase';
 
 @Controller('tasks')
 export class TasksController {
@@ -22,7 +22,7 @@ export class TasksController {
   async create(@Body() createTaskDto: CreateTaskDto) {
     const createdTask = await this.tasksService.create(createTaskDto);
 
-    const { city_id, category_id, title } = createTaskDto;
+    const { city_id, title } = createTaskDto;
     const priorities = [
       { priority: 2, delay: 0 },
       { priority: 1, delay: 40000 },
@@ -32,12 +32,11 @@ export class TasksController {
     priorities.forEach(({ priority, delay }) => {
       setTimeout(async () => {
         console.log(
-          `Fetching executors for city_id: ${city_id}, category_id: ${category_id}, priority: ${priority}`,
+          `Fetching executors for city_id: ${city_id},  priority: ${priority}`,
         );
 
         const executors = await this.tasksService.findExecutorsForPush(
           city_id,
-          category_id,
           priority,
         );
 
@@ -48,6 +47,8 @@ export class TasksController {
         const registrationTokens = executors
           .map((user) => user.fcm_token)
           .filter(Boolean);
+
+        console.log('user:', executors);
 
         console.log(
           `Filtered to ${registrationTokens.length} valid registration tokens`,
