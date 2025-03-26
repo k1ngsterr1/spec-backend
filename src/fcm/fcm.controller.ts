@@ -20,11 +20,6 @@ export class FcmController {
     return await this.fcmService.create(createFcmDto);
   }
 
-  @Get()
-  async findAll() {
-    return await this.fcmService.findAll();
-  }
-
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.fcmService.findOne(+id);

@@ -31,15 +31,27 @@ export class TasksController {
 
     priorities.forEach(({ priority, delay }) => {
       setTimeout(async () => {
+        console.log(
+          `Fetching executors for city_id: ${city_id}, category_id: ${category_id}, priority: ${priority}`,
+        );
+
         const executors = await this.tasksService.findExecutorsForPush(
           city_id,
           category_id,
           priority,
         );
 
+        console.log(
+          `Found ${executors.length} executors for priority ${priority}`,
+        );
+
         const registrationTokens = executors
           .map((user) => user.fcm_token)
           .filter(Boolean);
+
+        console.log(
+          `Filtered to ${registrationTokens.length} valid registration tokens`,
+        );
 
         if (registrationTokens.length > 0) {
           const messages = registrationTokens.map((token) => ({
@@ -61,9 +73,22 @@ export class TasksController {
             .sendEach(messages as any)
             .then((response) => {
               console.log(
-                `${response.successCount} messages were sent successfully`,
+                `${response.successCount} messages were sent successfully for priority ${priority}`,
+              );
+              if (response.failureCount > 0) {
+                console.log(
+                  `${response.failureCount} messages failed to send for priority ${priority}`,
+                );
+              }
+            })
+            .catch((error) => {
+              console.error(
+                `Error sending messages for priority ${priority}:`,
+                error,
               );
             });
+        } else {
+          console.log(`No registration tokens found for priority ${priority}.`);
         }
       }, delay);
     });
