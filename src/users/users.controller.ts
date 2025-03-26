@@ -35,6 +35,11 @@ export class UsersController {
     return this.usersService.verifySms(sendSMSDto);
   }
 
+  @Post('link-fcm')
+  linkFcm(@Body() data: any) {
+    return this.usersService.linkFcm(data);
+  }
+
   @Post('verify-phone')
   async verifyPhone(@Body() data: any) {
     return await this.usersService.verifyPhoneAndGenerateJwt(data);

@@ -227,11 +227,6 @@ export class UsersService {
         },
       });
 
-      await this.prisma.fcm_token.update({
-        where: { temporaryKey: data.temporaryKey },
-        data: { userId: user.id },
-      });
-
       const payload = { phone: user.phone, id: user.id, role: user.role };
       const token = this.jwtService.sign(payload);
 
@@ -247,6 +242,15 @@ export class UsersService {
       );
       throw new HttpException('Failed to verify the code', 500);
     }
+  }
+
+  async linkFcm(data: any) {
+    const connectedToken = await this.prisma.fcm_token.update({
+      where: { temporaryKey: data.temporaryKey },
+      data: { userId: data.id },
+    });
+
+    return connectedToken;
   }
 
   async findAll(query: {
