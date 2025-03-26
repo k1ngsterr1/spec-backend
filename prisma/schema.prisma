@@ -114,4 +114,18 @@ model users {
   tasks_tasks_performer_user_idTousers tasks[]           @relation("tasks_performer_user_idTousers")
   user_category                        user_category[]
   cities                               cities?           @relation(fields: [city_id], references: [id], onUpdate: NoAction)
+
+  fcm_token                      fcm_token?
+
 }
+
+model fcm_token {
+  id           Int       @id @default(autoincrement())
+  temporaryKey String    @unique
+  fcmToken     String    @unique 
+  userId       Int?      @unique
+  createdAt    DateTime  @default(now())
+
+  user         users?    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+

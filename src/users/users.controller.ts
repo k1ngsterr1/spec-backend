@@ -13,6 +13,7 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserAuthGuard } from 'src/shared/guards/user.auth.guard';
+import { SetUserFCMDto } from './dto/set-user.dto';
 
 @Controller('users')
 export class UsersController {

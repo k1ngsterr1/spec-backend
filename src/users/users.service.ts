@@ -227,6 +227,11 @@ export class UsersService {
         },
       });
 
+      await this.prisma.fcm_token.update({
+        where: { temporaryKey: data.temporaryKey },
+        data: { userId: user.id },
+      });
+
       const payload = { phone: user.phone, id: user.id, role: user.role };
       const token = this.jwtService.sign(payload);
 

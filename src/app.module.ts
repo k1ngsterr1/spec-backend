@@ -14,6 +14,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { TasksHistoryModule } from './tasks-history/tasks-history.module';
 import { AdminModule } from './admin/admin.module';
 import { ApplicationTextModule } from './application-text/application-text.module';
+import { FcmModule } from './fcm/fcm.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ApplicationTextModule } from './application-text/application-text.modul
     TasksHistoryModule,
     AdminModule,
     ApplicationTextModule,
+    FcmModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

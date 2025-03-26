@@ -12,14 +12,63 @@ import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetPaidDto } from './dto/set-paid.dto';
+import * as admin from 'firebase-admin';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  async create(@Body() createTaskDto: CreateTaskDto) {
+    const createdTask = await this.tasksService.create(createTaskDto);
+
+    const { city_id, category_id, title } = createTaskDto;
+    const priorities = [
+      { priority: 2, delay: 0 },
+      { priority: 1, delay: 40000 },
+      { priority: 0, delay: 80000 },
+    ];
+
+    priorities.forEach(({ priority, delay }) => {
+      setTimeout(async () => {
+        const executors = await this.tasksService.findExecutorsForPush(
+          city_id,
+          category_id,
+          priority,
+        );
+
+        const registrationTokens = executors
+          .map((user) => user.fcm_token)
+          .filter(Boolean);
+
+        if (registrationTokens.length > 0) {
+          const messages = registrationTokens.map((token) => ({
+            token,
+            notification: {
+              title: '✅ Новая заявка',
+              body: `⚙️ ${title}`,
+            },
+            android: {
+              notification: { sound: 'special_sound.mp3' },
+            },
+            apns: {
+              payload: { aps: { sound: 'special_sound.caf' } },
+            },
+          }));
+
+          admin
+            .messaging()
+            .sendEach(messages as any)
+            .then((response) => {
+              console.log(
+                `${response.successCount} messages were sent successfully`,
+              );
+            });
+        }
+      }, delay);
+    });
+
+    return createdTask;
   }
 
   @Get()
@@ -37,8 +86,8 @@ export class TasksController {
       category_id: category_id ? Number(category_id) : undefined,
       status_id: status_id
         ? Array.isArray(status_id)
-          ? status_id.map(Number) // Преобразуем в массив чисел
-          : [Number(status_id)] // Если один статус - делаем массив
+          ? status_id.map(Number)
+          : [Number(status_id)]
         : undefined,
       performer_user_id: performer_user_id
         ? Number(performer_user_id)

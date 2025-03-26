@@ -33,6 +33,20 @@ export class TasksService {
     return { success: 'Задание успешно добавлено!', task: task };
   }
 
+  /** Поиск исполнителей для рассылки пуш-уведомлений */
+  async findExecutorsForPush(
+    city_id: number,
+    category_id: number,
+    priority: number,
+  ) {
+    return this.prisma.users.findMany({
+      where: { city_id, priority, user_category: { some: { category_id } } },
+      include: {
+        fcm_token: true,
+      },
+    });
+  }
+
   async findArchivedTasks(is_paid?: boolean) {
     const last24Hours = new Date();
     last24Hours.setHours(last24Hours.getHours() - 24);
