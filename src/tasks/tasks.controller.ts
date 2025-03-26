@@ -14,6 +14,8 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetPaidDto } from './dto/set-paid.dto';
 import admin from 'src/firebase';
 
+// const fart = require('../../fart.mp3');
+
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
@@ -22,7 +24,7 @@ export class TasksController {
   async create(@Body() createTaskDto: CreateTaskDto) {
     const createdTask = await this.tasksService.create(createTaskDto);
 
-    const { city_id, title } = createTaskDto;
+    const { city_id, description } = createTaskDto;
     const priorities = [
       { priority: 2, delay: 0 },
       { priority: 1, delay: 40000 },
@@ -32,7 +34,7 @@ export class TasksController {
     priorities.forEach(({ priority, delay }) => {
       setTimeout(async () => {
         console.log(
-          `Fetching executors for city_id: ${city_id},  priority: ${priority}`,
+          `Fetching executors for city_id: ${city_id}, priority: ${priority}`,
         );
 
         const executors = await this.tasksService.findExecutorsForPush(
@@ -45,27 +47,27 @@ export class TasksController {
         );
 
         const registrationTokens = executors
-          .map((user) => user.fcm_token)
-          .filter(Boolean);
+          .map((user) => user.fcm_token?.fcmToken)
+          .filter((token) => typeof token === 'string' && token.trim() !== '');
 
-        console.log('user:', executors);
-
+        console.log('Executors:', executors);
         console.log(
           `Filtered to ${registrationTokens.length} valid registration tokens`,
         );
+        console.log('registrationTokens:', registrationTokens);
 
         if (registrationTokens.length > 0) {
           const messages = registrationTokens.map((token) => ({
             token,
             notification: {
               title: '✅ Новая заявка',
-              body: `⚙️ ${title}`,
+              body: `⚙️ ${description}`,
             },
             android: {
-              notification: { sound: 'special_sound.mp3' },
+              notification: { sound: '../../fart.mp3' },
             },
             apns: {
-              payload: { aps: { sound: 'special_sound.caf' } },
+              payload: { aps: { sound: '../../fart.mp3' } },
             },
           }));
 
@@ -76,10 +78,16 @@ export class TasksController {
               console.log(
                 `${response.successCount} messages were sent successfully for priority ${priority}`,
               );
+
               if (response.failureCount > 0) {
-                console.log(
-                  `${response.failureCount} messages failed to send for priority ${priority}`,
-                );
+                response.responses.forEach((resp, idx) => {
+                  if (!resp.success) {
+                    console.error(
+                      `Failed to send message to token ${registrationTokens[idx]}:`,
+                      resp.error,
+                    );
+                  }
+                });
               }
             })
             .catch((error) => {
@@ -89,7 +97,9 @@ export class TasksController {
               );
             });
         } else {
-          console.log(`No registration tokens found for priority ${priority}.`);
+          console.log(
+            `No valid registration tokens found for priority ${priority}.`,
+          );
         }
       }, delay);
     });
