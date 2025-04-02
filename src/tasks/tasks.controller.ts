@@ -7,20 +7,21 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetPaidDto } from './dto/set-paid.dto';
 import admin from 'src/firebase';
-
-// const fart = require('../../fart.mp3');
+import { AdminAuthGuard } from 'src/shared/guards/admin.auth.guard';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
+  @UseGuards(AdminAuthGuard)
   async create(@Body() createTaskDto: CreateTaskDto) {
     const createdTask = await this.tasksService.create(createTaskDto);
 
@@ -108,6 +109,7 @@ export class TasksController {
   }
 
   @Get()
+  @UseGuards(AdminAuthGuard)
   findAll(
     @Query('city_id') city_id?: string,
     @Query('category_id') category_id?: string,
@@ -136,27 +138,32 @@ export class TasksController {
   }
 
   @Get(':id')
+  @UseGuards(AdminAuthGuard)
   findOne(@Param('id') id: string) {
     return this.tasksService.findOne(+id);
   }
 
   @Get('archive')
+  @UseGuards(AdminAuthGuard)
   async findArchivedTasks(@Query('isPaid') is_paid?: string) {
     const isPaidFilter = is_paid !== undefined ? is_paid === 'true' : undefined;
     return this.tasksService.findArchivedTasks(isPaidFilter);
   }
 
   @Patch('/set-paid')
+  @UseGuards(AdminAuthGuard)
   setPaid(@Body() setPaidDto: SetPaidDto) {
     return this.tasksService.markTaskAsPaid(setPaidDto);
   }
 
   @Patch(':id')
+  @UseGuards(AdminAuthGuard)
   update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
     return this.tasksService.update(+id, updateTaskDto);
   }
 
   @Delete(':id')
+  @UseGuards(AdminAuthGuard)
   remove(@Param('id') id: string) {
     return this.tasksService.remove(+id);
   }

@@ -14,6 +14,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserAuthGuard } from 'src/shared/guards/user.auth.guard';
 import { SetUserFCMDto } from './dto/set-user.dto';
+import { AdminAuthGuard } from 'src/shared/guards/admin.auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -75,16 +76,19 @@ export class UsersController {
   }
 
   @Get('/user/:id')
+  @UseGuards(AdminAuthGuard)
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
 
   @Patch('/user/:id')
+  @UseGuards(AdminAuthGuard)
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
   @Delete('/user/:id')
+  @UseGuards(AdminAuthGuard)
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
