@@ -216,7 +216,7 @@ export class UsersService {
         data: {
           phone,
           user_agent,
-          password_hash: '',
+          password_hash: data.password,
           priority: 0,
           role: 'performer',
         },

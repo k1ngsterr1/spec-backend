@@ -106,7 +106,7 @@ model users {
   app_token                            String?
   user_agent                           String?
   city_id                              Int?
-  role                                 String
+  role                                 String @default("user")
   priority                             Int
   balance_history                      balance_history[]
   task_history                         task_history[]
@@ -114,7 +114,6 @@ model users {
   tasks_tasks_performer_user_idTousers tasks[]           @relation("tasks_performer_user_idTousers")
   user_category                        user_category[]
   cities                               cities?           @relation(fields: [city_id], references: [id], onUpdate: NoAction)
-
   fcm_token                      fcm_token?
 
 }
