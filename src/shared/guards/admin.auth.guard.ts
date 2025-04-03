@@ -32,7 +32,7 @@ export class AdminAuthGuard extends AuthGuard {
 
       console.log('USER ROLE:', user.role);
 
-      if (user.role != 'ADMIN' || 'admin') {
+      if (user.role != 'admin') {
         throw new ForbiddenException('Access denied: Admins only');
       }
 
