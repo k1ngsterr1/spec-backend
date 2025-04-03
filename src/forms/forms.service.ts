@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFormDto } from './dto/create-form.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
+import { PrismaService } from 'src/shared/prisma/prisma.service';
 
 @Injectable()
 export class FormsService {
-  create(createFormDto: CreateFormDto) {
-    return 'This action adds a new form';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createFormDto: any) {
+    return await this.prisma.forms.create({
+      data: createFormDto,
+    });
   }
 
-  findAll() {
-    return `This action returns all forms`;
+  async findAll() {
+    return await this.prisma.forms.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} form`;
+  async findOne(id: number) {
+    const form = await this.prisma.forms.findUnique({
+      where: { id },
+    });
+
+    if (!form) {
+      throw new NotFoundException(`Форма с ID ${id} не найдена`);
+    }
+
+    return form;
   }
 
-  update(id: number, updateFormDto: UpdateFormDto) {
-    return `This action updates a #${id} form`;
+  async update(id: number, updateFormDto: UpdateFormDto) {
+    await this.findOne(id); // Проверка существования
+
+    return await this.prisma.forms.update({
+      where: { id },
+      data: updateFormDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} form`;
+  async remove(id: number) {
+    await this.findOne(id); // Проверка существования
+
+    return await this.prisma.forms.delete({
+      where: { id },
+    });
   }
 }
