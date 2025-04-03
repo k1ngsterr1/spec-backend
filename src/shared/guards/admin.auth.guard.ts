@@ -30,7 +30,7 @@ export class AdminAuthGuard extends AuthGuard {
         throw new UnauthorizedException('User not found');
       }
 
-      if (user.role !== 'ADMIN' || 'admin') {
+      if (user.role != 'ADMIN' || 'admin') {
         throw new ForbiddenException('Access denied: Admins only');
       }
 
