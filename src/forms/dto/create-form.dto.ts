@@ -1,1 +1,3 @@
-export class CreateFormDto {}
+export class CreateFormDto {
+  text: string;
+}
