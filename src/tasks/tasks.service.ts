@@ -15,7 +15,6 @@ export class TasksService {
         city_id: data.city_id,
         category_id: data.category_id,
         comment: data.comment,
-        title: data.title,
         execute_at: data.execute_at ? new Date(data.execute_at) : null,
         description: data.description,
         price_min: data.price_min,
@@ -82,7 +81,6 @@ export class TasksService {
       data: {
         category_id: data.category_id,
         comment: data.comment,
-        title: data.title,
         execute_at: data.execute_at ? new Date(data.execute_at) : null,
         description: data.description,
         price_min: data.price_min,
