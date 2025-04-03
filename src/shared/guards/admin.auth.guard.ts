@@ -36,6 +36,7 @@ export class AdminAuthGuard extends AuthGuard {
 
       return true;
     } catch (error) {
+      console.log('error:', error);
       console.error('Admin JWT validation failed:', error.message);
       throw error instanceof UnauthorizedException ||
         error instanceof ForbiddenException

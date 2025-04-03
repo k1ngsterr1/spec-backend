@@ -15,7 +15,6 @@ export class AdminService {
   async register(createAdminDto: CreateAdminDto) {
     const { username, password } = createAdminDto;
 
-    // Check if admin already exists
     let admin = await this.prisma.users.findUnique({
       where: { username },
     });

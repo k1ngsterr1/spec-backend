@@ -15,6 +15,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetPaidDto } from './dto/set-paid.dto';
 import admin from 'src/firebase';
 import { AdminAuthGuard } from 'src/shared/guards/admin.auth.guard';
+import { UserAuthGuard } from 'src/shared/guards/user.auth.guard';
 
 @Controller('tasks')
 export class TasksController {
@@ -109,7 +110,7 @@ export class TasksController {
   }
 
   @Get()
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(UserAuthGuard)
   findAll(
     @Query('city_id') city_id?: string,
     @Query('category_id') category_id?: string,
@@ -138,13 +139,13 @@ export class TasksController {
   }
 
   @Get(':id')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(UserAuthGuard)
   findOne(@Param('id') id: string) {
     return this.tasksService.findOne(+id);
   }
 
   @Get('archive')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(UserAuthGuard)
   async findArchivedTasks(@Query('isPaid') is_paid?: string) {
     const isPaidFilter = is_paid !== undefined ? is_paid === 'true' : undefined;
     return this.tasksService.findArchivedTasks(isPaidFilter);
