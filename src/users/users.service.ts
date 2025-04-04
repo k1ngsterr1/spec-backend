@@ -218,7 +218,7 @@ export class UsersService {
           user_agent,
           password_hash: data.password,
           priority: 0,
-          role: 'performer',
+          role: 'user',
         },
       });
 
