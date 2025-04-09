@@ -13,10 +13,14 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { AdminService } from './admin.service';
 import { AdminAuthGuard } from 'src/shared/guards/admin.auth.guard';
+import { PrismaService } from 'src/shared/prisma/prisma.service';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Post('register')
   register(@Body() registerAdminDto: CreateAdminDto) {
@@ -29,10 +33,13 @@ export class AdminController {
   }
 
   @Get('is-admin')
-  isAdmin(@Req() req: any) {
-    const user = req.user as any;
-    console.log('req:', req);
-    console.log('user:', req.user);
+  async isAdmin(@Req() req: any) {
+    const user = await this.prisma.users.findUnique({
+      where: { id: req.id },
+    });
+
+    console.log('req id:', req.id, 'user:', user);
+
     return {
       isAdmin: user?.role === 'admin',
     };
