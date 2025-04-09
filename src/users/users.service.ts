@@ -20,6 +20,8 @@ export class UsersService {
   ) {}
 
   async getMe(userId: any) {
+    console.log('user id:', userId);
+
     const user = await this.prisma.users.findFirst({
       where: { id: userId },
     });
@@ -199,7 +201,6 @@ export class UsersService {
         throw new HttpException(`Неверный код верификации`, 400);
       }
 
-      // Step 2: Check if user already exists
       let user = await this.prisma.users.findUnique({
         where: { phone },
       });
