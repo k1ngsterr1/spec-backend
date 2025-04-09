@@ -23,7 +23,7 @@ export class AdminController {
   @Get('is-admin/:id')
   async isAdmin(@Param('id') id: any) {
     const user = await this.prisma.users.findUnique({
-      where: { id: id },
+      where: { id: Number(id) },
     });
 
     if (!user) {
