@@ -31,7 +31,8 @@ export class AdminController {
   @Get('is-admin')
   isAdmin(@Req() req: any) {
     const user = req.user as any;
-    console.log('user:', user);
+    console.log('req:', req);
+    console.log('user:', req.user);
     return {
       isAdmin: user?.role === 'admin',
     };
