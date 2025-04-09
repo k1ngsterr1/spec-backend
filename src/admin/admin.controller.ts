@@ -29,7 +29,6 @@ export class AdminController {
   }
 
   @Get('is-admin')
-  @UseGuards(AdminAuthGuard)
   isAdmin(@Req() req: any) {
     const user = req.user as any;
     return {
