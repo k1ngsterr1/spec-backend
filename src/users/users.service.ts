@@ -20,8 +20,6 @@ export class UsersService {
   ) {}
 
   async getMe(userId: any) {
-    console.log('user id:', userId);
-
     const user = await this.prisma.users.findFirst({
       where: { id: userId },
     });

@@ -22,9 +22,8 @@ export class UsersController {
 
   @Get('me')
   @UseGuards(UserAuthGuard)
-  async getMe(@Request() req) {
-    console.log('req.user.sub:', req.user.sub);
-    return await this.usersService.getMe(req.user.sub);
+  async getMe(@Param('id') id: any) {
+    return await this.usersService.getMe(+id);
   }
 
   @Post('send-sms')
