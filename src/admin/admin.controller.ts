@@ -1,18 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Param } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { AdminService } from './admin.service';
-import { AdminAuthGuard } from 'src/shared/guards/admin.auth.guard';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 
 @Controller('admin')
@@ -32,13 +20,17 @@ export class AdminController {
     return this.adminService.login(loginAdminDto);
   }
 
-  @Get('is-admin')
-  async isAdmin(@Req() req: any) {
+  @Get('is-admin/:id')
+  async isAdmin(@Param('id') id: any) {
     const user = await this.prisma.users.findUnique({
-      where: { id: req.id },
+      where: { id: id },
     });
 
-    console.log('req id:', req.id, 'user:', user);
+    if (!user) {
+      return {
+        isAdmin: false,
+      };
+    }
 
     return {
       isAdmin: user?.role === 'admin',
