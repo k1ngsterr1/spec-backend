@@ -207,10 +207,9 @@ export class UsersService {
         const payload = { id: user.id, phone: user.phone, role: user.role };
         const token = this.jwtService.sign(payload);
 
-        return { token };
+        return { token, id: user.id };
       }
 
-      // Step 3: Create user after successful verification
       user = await this.prisma.users.create({
         data: {
           phone,
@@ -311,7 +310,9 @@ export class UsersService {
     const payload = { id: user.id, phone: user.phone, role: user.role };
     const token = this.jwtService.sign(payload);
 
-    return { token };
+    console.log('lolka');
+
+    return { token, id: user.id };
   }
 
   async update(id: number, updateUserDto: any) {
