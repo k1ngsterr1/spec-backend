@@ -15,6 +15,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserAuthGuard } from 'src/shared/guards/user.auth.guard';
 import { SetUserFCMDto } from './dto/set-user.dto';
 import { AdminAuthGuard } from 'src/shared/guards/admin.auth.guard';
+import { User } from 'src/shared/decorators/user.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -22,8 +23,8 @@ export class UsersController {
 
   @Get('me')
   @UseGuards(UserAuthGuard)
-  async getMe(@Param('id') id: any) {
-    return await this.usersService.getMe(+id);
+  async getMe(@User() user) {
+    return await this.usersService.getMe(user.sub);
   }
 
   @Post('send-sms')
@@ -72,7 +73,7 @@ export class UsersController {
   @Get('balance-stats')
   @UseGuards(UserAuthGuard)
   async getBalanceStats(@Request() req) {
-    return await this.usersService.getBalanceStats(req.user.sub);
+    return await this.usersService.getBalanceStats(req.user.id);
   }
 
   @Get('/user/:id')
