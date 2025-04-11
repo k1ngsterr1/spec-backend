@@ -13,7 +13,6 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserAuthGuard } from 'src/shared/guards/user.auth.guard';
-import { SetUserFCMDto } from './dto/set-user.dto';
 import { AdminAuthGuard } from 'src/shared/guards/admin.auth.guard';
 import { User } from 'src/shared/decorators/user.decorator';
 
@@ -24,7 +23,7 @@ export class UsersController {
   @Get('me')
   @UseGuards(UserAuthGuard)
   async getMe(@User() user) {
-    return await this.usersService.getMe(user.sub);
+    return await this.usersService.getMe(user.id);
   }
 
   @Post('send-sms')
