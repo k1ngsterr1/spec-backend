@@ -21,9 +21,18 @@ export class UsersService {
 
   async getMe(userId: any) {
     const user = await this.prisma.users.findUnique({
-      where: { id: userId },
+      where: { id: userId }, // or `username`, `phone`, etc.
       include: {
-        user_category: true,
+        user_category: {
+          include: {
+            categories: {
+              select: {
+                id: true,
+                name: true, // 👈 get category name
+              },
+            },
+          },
+        },
       },
     });
 
