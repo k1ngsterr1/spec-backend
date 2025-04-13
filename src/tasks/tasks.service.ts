@@ -140,21 +140,17 @@ export class TasksService {
   }) {
     const where: any = {};
 
-    if (query.city_id) where.city_id = query.city_id;
+    // Optional direct filters
     if (query.category_id) where.category_id = query.category_id;
-
-    // Поддержка одного или нескольких статус ID
     if (query.status_id) {
       where.status_id = Array.isArray(query.status_id)
         ? { in: query.status_id.map(Number) }
         : Number(query.status_id);
     }
 
-    if (query.performer_user_id)
-      where.performer_user_id = query.performer_user_id;
-
-    // Проверяем, передан ли emergency_call в query (true/false)
-    if ('emergency_call' in query) where.emergency_call = query.emergency_call;
+    if ('emergency_call' in query) {
+      where.emergency_call = query.emergency_call;
+    }
 
     if (query.executeAtFrom || query.executeAtTo) {
       where.execute_at = {
@@ -163,6 +159,29 @@ export class TasksService {
       };
     }
 
+    // 🧠 Advanced filter: performer-based categories + their city
+    if (query.performer_user_id) {
+      const user = await this.prisma.users.findUnique({
+        where: { id: query.performer_user_id },
+        include: {
+          user_category: { select: { category_id: true } },
+        },
+      });
+
+      if (user) {
+        const categoryIds = user.user_category.map((uc) => uc.category_id);
+        where.category_id = { in: categoryIds };
+
+        if (user.city_id) {
+          where.city_id = user.city_id;
+        }
+      }
+    } else if (query.city_id) {
+      // City filter if performer is not provided
+      where.city_id = query.city_id;
+    }
+
+    // 🔍 Final query
     const tasks = await this.prisma.tasks.findMany({
       where,
       include: {
