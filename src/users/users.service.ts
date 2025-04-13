@@ -22,6 +22,9 @@ export class UsersService {
   async getMe(userId: any) {
     const user = await this.prisma.users.findUnique({
       where: { id: userId },
+      include: {
+        user_category: true,
+      },
     });
 
     if (!user) {
