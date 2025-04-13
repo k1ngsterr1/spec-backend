@@ -158,7 +158,7 @@ export class TasksController {
   }
 
   @Patch(':id')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(UserAuthGuard)
   update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
     return this.tasksService.update(+id, updateTaskDto);
   }
