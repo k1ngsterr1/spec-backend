@@ -58,7 +58,7 @@ model tasks {
   id                                   Int               @id @default(autoincrement())
   city_id                              Int?
   category_id                          Int?
-  execute_at                           DateTime?         @db.Timestamp(6)
+  execute_at                           String?        
   description                          String?
   price_min                            Float
   price_max                            Float

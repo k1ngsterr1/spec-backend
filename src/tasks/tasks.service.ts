@@ -15,7 +15,7 @@ export class TasksService {
         city_id: data.city_id,
         category_id: data.category_id,
         comment: data.comment,
-        execute_at: data.execute_at ? new Date(data.execute_at) : null,
+        execute_at: data.execute_at,
         description: data.description,
         price_min: data.price_min,
         price_max: data.price_max,
@@ -45,8 +45,9 @@ export class TasksService {
   }
 
   async findArchivedTasks(is_paid?: boolean) {
-    const last24Hours = new Date();
-    last24Hours.setHours(last24Hours.getHours() - 24);
+    const last24Hours = new Date(
+      Date.now() - 24 * 60 * 60 * 1000,
+    ).toISOString(); // 👈 convert to string
 
     const tasks = await this.prisma.tasks.findMany({
       where: {
@@ -81,7 +82,7 @@ export class TasksService {
       data: {
         category_id: data.category_id,
         comment: data.comment,
-        execute_at: data.execute_at ? new Date(data.execute_at) : null,
+        execute_at: data.execute_at,
         description: data.description,
         price_min: data.price_min,
         price_max: data.price_max,
@@ -109,13 +110,11 @@ export class TasksService {
   async markTaskAsPaid(data: SetPaidDto) {
     const { task_id, user_id, amount, reason_id } = data;
 
-    // Проверяем, не оплачена ли уже задача
     const alreadyPaid = await this.isTaskPaid(task_id);
     if (alreadyPaid) {
       throw new Error('Задача уже оплачена!');
     }
 
-    // Обновляем поле is_paid в tasks
     await this.prisma.balance_history.create({
       data: {
         task_id: task_id,
@@ -239,9 +238,7 @@ export class TasksService {
       where: { id },
       data: {
         city_area: updateTaskDto.city_area || undefined,
-        execute_at: updateTaskDto.execute_at
-          ? new Date(updateTaskDto.execute_at)
-          : undefined,
+        execute_at: updateTaskDto.execute_at || null,
         description: updateTaskDto.description,
         comment: updateTaskDto.comment,
         price_min: updateTaskDto.price_min,
