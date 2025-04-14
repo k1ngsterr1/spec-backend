@@ -107,10 +107,15 @@ export class TasksService {
   }
 
   async markTaskAsPaid(data: SetPaidDto) {
-    const { taskId, userId, amount, reasonId } = data;
+    const {
+      taskId: task_id,
+      userId: user_id,
+      amount,
+      reasonId: reason_id,
+    } = data;
 
     // Проверяем, не оплачена ли уже задача
-    const alreadyPaid = await this.isTaskPaid(taskId);
+    const alreadyPaid = await this.isTaskPaid(task_id);
     if (alreadyPaid) {
       throw new Error('Задача уже оплачена!');
     }
@@ -118,14 +123,14 @@ export class TasksService {
     // Обновляем поле is_paid в tasks
     await this.prisma.balance_history.create({
       data: {
-        task_id: taskId,
-        user_id: userId,
-        reason_id: reasonId, // Например, 1 = "Оплата выполнена"
+        task_id: task_id,
+        user_id: user_id,
+        reason_id: reason_id,
         val: amount,
       },
     });
 
-    console.log(`Задача ${taskId} отмечена как оплаченная.`);
+    console.log(`Задача ${task_id} отмечена как оплаченная.`);
   }
 
   /** Получение всех задач */
@@ -181,7 +186,6 @@ export class TasksService {
       where.city_id = query.city_id;
     }
 
-    // 🔍 Final query
     const tasks = await this.prisma.tasks.findMany({
       where,
       include: {
