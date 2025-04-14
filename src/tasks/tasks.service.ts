@@ -24,7 +24,7 @@ export class TasksService {
         address: data.address,
         status_id: data.status_id,
         creator_user_id: data.creator_user_id,
-        performer_user_id: data.performer_user_id ?? null,
+        performer_user_id: null,
         emergency_call: data.emergency_call ?? false,
       },
     });
@@ -185,6 +185,7 @@ export class TasksService {
     const tasks = await this.prisma.tasks.findMany({
       where,
       include: {
+        categories: true,
         balance_history: true,
         users_tasks_performer_user_idTousers: {
           select: {
@@ -222,8 +223,6 @@ export class TasksService {
     if (!existingTask) {
       throw new NotFoundException(`Задание с ID ${id} не найдено`);
     }
-
-    console.log('update task dto:', updateTaskDto);
 
     if (updateTaskDto.performer_user_id) {
       const performerExists = await this.prisma.users.findUnique({
