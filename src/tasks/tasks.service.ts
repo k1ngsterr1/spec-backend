@@ -107,12 +107,7 @@ export class TasksService {
   }
 
   async markTaskAsPaid(data: SetPaidDto) {
-    const {
-      taskId: task_id,
-      userId: user_id,
-      amount,
-      reasonId: reason_id,
-    } = data;
+    const { task_id, user_id, amount, reason_id } = data;
 
     // Проверяем, не оплачена ли уже задача
     const alreadyPaid = await this.isTaskPaid(task_id);

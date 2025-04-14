@@ -1,6 +1,6 @@
 export class SetPaidDto {
-  taskId: any;
-  userId: number;
+  task_id: any;
+  user_id: number;
   amount: number;
-  reasonId: number;
+  reason_id: number;
 }
